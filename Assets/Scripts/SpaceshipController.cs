@@ -1,60 +1,37 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SpaceshipController : MonoBehaviour
+namespace SaveUs
 {
-    private const string Horizontal = "Horizontal";
-    private const string Vertical = "Vertical";
-    private const float MaxInputMagnitudeLength = 1f;
-
-    [SerializeField] private float _alignedMoveSpeed = 10f;
-    [SerializeField] private float _unalignedMoveSpeed = 5f;
-    [SerializeField] private Rigidbody2D _rigidbody;
-    [SerializeField] private Camera _camera;
-
-    private Vector2 _moveVector;
-    private Vector2 _lookVector;
-    private float _moveSpeed;
-
-    private void Update()
+    public class SpaceshipController : MonoBehaviour
     {
-        ReadMovementInput();
-        ReadMouseInput();
+        [SerializeField] private float _alignedMoveSpeed = 10f;
+        [SerializeField] private float _unalignedMoveSpeed = 5f;
+        [SerializeField] private bool _alignSpeedWithDirection = true;
+        [SerializeField] private Rigidbody2D _rigidbody;
 
-        var dot = Vector2.Dot(_moveVector.normalized, _lookVector.normalized);
-        _moveSpeed = Mathf.Lerp(_unalignedMoveSpeed, _alignedMoveSpeed, dot);
+        private void RotateSpaceshipInDirection(Vector2 direction)
+        {
+            var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
 
-        var pos = transform.position;
-        Debug.DrawRay(pos, _moveVector.normalized, Color.green);
-        Debug.DrawRay(pos, _lookVector.normalized, Color.blue);
-    }
+        private void PerformMovement(Vector2 moveVector, Vector2 lookDirection)
+        {
+            var moveSpeed = _alignedMoveSpeed;
 
-    private void FixedUpdate()
-    {
-        PerformMovement();
-    }
+            if (_alignSpeedWithDirection)
+            {
+                var dot = (Vector2.Dot(moveVector.normalized, lookDirection.normalized) + 1f) * 0.5f;
+                moveSpeed = Mathf.Lerp(_unalignedMoveSpeed, _alignedMoveSpeed, dot);
+            }
 
-    private void LateUpdate()
-    {
-        var angle = Mathf.Atan2(_lookVector.y, _lookVector.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-    }
+            _rigidbody.velocity = moveVector * moveSpeed;
+        }
 
-    private void ReadMouseInput()
-    {
-        _lookVector = Vector3.Normalize(_camera.ScreenToWorldPoint(Input.mousePosition) - transform.position);
-    }
-
-    private void ReadMovementInput()
-    {
-        _moveVector = Vector2.ClampMagnitude(new Vector2(Input.GetAxis(Horizontal), Input.GetAxis(Vertical)),
-            MaxInputMagnitudeLength);
-    }
-
-    private void PerformMovement()
-    {
-        _rigidbody.velocity = _moveVector * _moveSpeed;
+        public void Move(Vector2 moveVector, Vector2 lookDirection)
+        {
+            PerformMovement(moveVector, lookDirection);
+            RotateSpaceshipInDirection(lookDirection);
+        }
     }
 }
