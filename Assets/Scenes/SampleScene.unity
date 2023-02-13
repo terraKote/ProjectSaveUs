@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 319230085}
   - component: {fileID: 319230084}
   - component: {fileID: 319230087}
+  - component: {fileID: 319230088}
   m_Layer: 0
   m_Name: Spaceship Angel
   m_TagString: Untagged
@@ -207,8 +208,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac37d2e2f30222f40895df9fcae1a659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 5
+  _alignedMoveSpeed: 10
+  _unalignedMoveSpeed: 5
+  _alignSpeedWithDirection: 1
   _rigidbody: {fileID: 319230084}
+--- !u!114 &319230088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319230083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb79aa9dab4f45c2a1a4398a27b6dbb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 319230087}
   _camera: {fileID: 519420031}
 --- !u!1 &510517157
 GameObject:
