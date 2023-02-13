@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 
 namespace SaveUs
@@ -11,13 +12,32 @@ namespace SaveUs
 
         [SerializeField] private SpaceshipController _controller;
         [SerializeField] private Camera _camera;
+        [SerializeField] private TextMeshProUGUI _controlStyleLabel;
+
+        private bool _useRelativeControls = true;
 
         private void Update()
         {
-            var input = ReadMovementInput();
-            var move = transform.TransformDirection(new Vector3(input.y, input.x));
+            var moveInput = ValidateControlStyle(ReadMovementInput());
             var look = ReadMouseInput();
-            _controller.Move(Vector2.ClampMagnitude(move, MaxInputMagnitudeLength), look);
+            _controller.Move(Vector2.ClampMagnitude(moveInput, MaxInputMagnitudeLength), look);
+        }
+
+        private Vector2 ValidateControlStyle(Vector2 moveInput)
+        {
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                _useRelativeControls = !_useRelativeControls;
+            }
+
+            if (_useRelativeControls)
+            {
+                moveInput = transform.TransformDirection(new Vector3(moveInput.y, moveInput.x));
+            }
+
+            _controlStyleLabel.text = _useRelativeControls ? "Control Style: Relative" : "Control Style: Absolute";
+
+            return moveInput;
         }
 
         private Vector2 ReadMouseInput()
